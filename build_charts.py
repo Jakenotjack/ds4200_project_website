@@ -61,6 +61,8 @@ precip_order = ['No Rain', 'Light Rain', 'Moderate Rain', 'Heavy Rain', 'No Data
 merged_weather['precipitation_level'] = pd.Categorical(
     merged_weather['precipitation_level'], categories=precip_order, ordered=True
 )
+# Drop rows with missing precipitation buckets to avoid null cells
+merged_weather = merged_weather[merged_weather['precipitation_level'] != 'No Data']
 
 heat_grouped = (
     merged_weather
