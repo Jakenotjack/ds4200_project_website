@@ -57,7 +57,7 @@ def bin_precipitation(val: float) -> str:
 
 
 merged_weather['precipitation_level'] = merged_weather['precipitation_sum'].apply(bin_precipitation)
-precip_order = ['No Rain', 'Light Rain', 'Moderate Rain', 'Heavy Rain', 'No Data']
+precip_order = ['No Rain', 'Light Rain', 'Moderate Rain', 'Heavy Rain']
 merged_weather['precipitation_level'] = pd.Categorical(
     merged_weather['precipitation_level'], categories=precip_order, ordered=True
 )
