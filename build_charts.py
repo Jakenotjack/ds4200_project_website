@@ -72,7 +72,7 @@ heat_grouped = (
 
 # Chart 1: Ridership vs precipitation/day heatmap
 min_val, max_val = heat_grouped['avg_ridership'].min(), heat_grouped['avg_ridership'].max()
-threshold = min_val + (max_val - min_val) * 0.5 if pd.notna(min_val) else 0
+threshold = heat_grouped['avg_ridership'].median()
 
 heatmap = (
     alt.Chart(heat_grouped)
@@ -82,7 +82,8 @@ heatmap = (
                 axis=alt.Axis(labelAngle=-45, labelFont=FONT_STACK, titleFont=FONT_STACK)),
         y=alt.Y('day_of_week:O', title='Day of Week',
                 axis=alt.Axis(labelFont=FONT_STACK, titleFont=FONT_STACK)),
-        color=alt.Color('avg_ridership:Q', title='Avg Daily Ridership', scale=alt.Scale(scheme='blues')),
+        color=alt.Color('avg_ridership:Q', title='Avg Daily Ridership',
+                        scale=alt.Scale(scheme='blues', domain=[min_val, max_val])),
         tooltip=[
             alt.Tooltip('day_of_week:O', title='Day'),
             alt.Tooltip('precipitation_level:O', title='Precipitation'),
@@ -103,10 +104,11 @@ text = (
 )
 
 chart_heatmap = (
-    (heatmap + text)
-    .properties(width=400, height=300, title='Average Subway Ridership by Day & Precipitation')
+    alt.layer(heatmap, text)
+    .properties(width='container', height=380, title='Average Subway Ridership by Day & Precipitation')
     .configure_title(font=FONT_STACK, fontSize=18)
     .configure_axis(labelFont=FONT_STACK, titleFont=FONT_STACK)
+    .configure(autosize=alt.AutoSizeParams(type='fit', contains='padding'))
 )
 save_chart(chart_heatmap, "heatmap")
 
@@ -179,7 +181,7 @@ chart_ridges = (
             alt.Tooltip('value:Q', title='Ridership', format=',.0f')
         ]
     )
-    .properties(width=140, height=550,
+    .properties(width=170, height=520,
                 title={'text': 'NYC Subway Ridership: Weather Impact Across Pandemic Timeline',
                        'subtitle': 'Distribution across different weather conditions (2020-2024)',
                        'font': FONT_STACK,
@@ -187,6 +189,7 @@ chart_ridges = (
                        'fontSize': 18,
                        'subtitleFontSize': 13})
     .configure_axis(labelFont=FONT_STACK, titleFont=FONT_STACK)
+    .configure(autosize=alt.AutoSizeParams(type='fit', contains='padding'))
 )
 
 save_chart(chart_ridges, "weather_density")
@@ -287,5 +290,124 @@ df_v2 = merged_aqi.copy().sort_values('date')
 df_v2['period'] = df_v2['date'].apply(categorize_period)
 
 build_aqi_chart(df_v2, periods_v2, None, 'Pandemic timeline', CHART_DIR / 'aqi_periods_v2.json')
+
+# Chart 5: MTA usage over time (from notebook)
+def prepare_mta_usage(df: pd.DataFrame) -> pd.DataFrame:
+    """Create tidy totals and percentage columns for subway/bus/bridge usage."""
+    tidy_df = df.copy()
+    tidy_df = tidy_df.rename(columns={'buses_total_estimated_ridersip': 'buses_total_estimated_ridership'})
+
+    totals = {
+        'subways_total_estimated_ridership': 'Subways',
+        'buses_total_estimated_ridership': 'Buses',
+        'bridges_and_tunnels_total_traffic': 'Bridges & Tunnels'
+    }
+    percents = {
+        'subways_of_comparable_pre_pandemic_day': 'Subways',
+        'buses_of_comparable_pre_pandemic_day': 'Buses',
+        'bridges_and_tunnels_of_comparable_pre_pandemic_day': 'Bridges & Tunnels'
+    }
+
+    for col in list(totals.keys()) + list(percents.keys()):
+        tidy_df[col] = pd.to_numeric(tidy_df[col], errors='coerce')
+
+    total_long = (
+        tidy_df[['date'] + list(totals.keys())]
+        .rename(columns=totals)
+        .melt(id_vars='date', var_name='mode', value_name='value_total')
+    )
+    pct_long = (
+        tidy_df[['date'] + list(percents.keys())]
+        .rename(columns=percents)
+        .melt(id_vars='date', var_name='mode', value_name='value_pct')
+    )
+    tidy = total_long.merge(pct_long, on=['date', 'mode'])
+    tidy['date'] = pd.to_datetime(tidy['date'])
+
+    # Express percentages as 0-100 instead of ratios
+    tidy['value_pct'] = tidy['value_pct'] * 100
+    return tidy
+
+
+def build_mta_usage_chart(tidy: pd.DataFrame) -> alt.VConcatChart:
+    """Interactive multi-line chart with brush + toggle for counts vs percentages."""
+    toggle = alt.param(
+        name="Show_Percentage",
+        bind=alt.binding_checkbox(name=" Show percentage of comparable day"),
+        value=False
+    )
+    legend_sel = alt.selection_point(fields=["mode"], bind="legend")
+    brush = alt.selection_interval(encodings=["x"])
+
+    base = (
+        alt.Chart(tidy)
+        .transform_calculate(
+            y_value="Show_Percentage ? datum.value_pct : datum.value_total"
+        )
+        .encode(
+            y=alt.Y(
+                "y_value:Q",
+                title="Ridership (counts or % of comparable day)",
+                axis=alt.Axis(labelFont=FONT_STACK, titleFont=FONT_STACK, format=",.0f")
+            ),
+            color=alt.Color(
+                "mode:N",
+                title="Mode",
+                legend=alt.Legend(titleFont=FONT_STACK, labelFont=FONT_STACK)
+            ),
+            tooltip=[
+                alt.Tooltip("date:T", title="Date"),
+                alt.Tooltip("mode:N", title="Mode"),
+                alt.Tooltip("value_total:Q", title="Total", format=","),
+                alt.Tooltip("value_pct:Q", title="% of pre-pandemic", format=",.1f")
+            ]
+        )
+        .add_params(toggle, legend_sel)
+        .transform_filter(legend_sel)
+    )
+
+    upper = (
+        base.mark_line()
+        .encode(
+            x=alt.X(
+                "date:T",
+                title="Date",
+                scale=alt.Scale(domain=brush),
+                axis=alt.Axis(labelFont=FONT_STACK, titleFont=FONT_STACK)
+            )
+        )
+        .properties(
+            width='container',
+            height=360,
+            title="NYC Transit Usage by Mode (toggle % to view recovery)"
+        )
+    )
+
+    lower = (
+        base.mark_area(opacity=0.2)
+        .encode(
+            x=alt.X(
+                "date:T",
+                title="Drag to zoom / pan the main view",
+                axis=alt.Axis(labelFont=FONT_STACK, titleFont=FONT_STACK)
+            ),
+            y=alt.Y("y_value:Q", title="", axis=alt.Axis(labels=False, ticks=False))
+        )
+        .add_params(brush)
+        .properties(width='container', height=90)
+    )
+
+    return (
+        alt.vconcat(upper, lower, spacing=8)
+        .resolve_scale(color='shared')
+        .configure_title(font=FONT_STACK, fontSize=18)
+        .configure_axis(labelFont=FONT_STACK, titleFont=FONT_STACK)
+        .configure(autosize=alt.AutoSizeParams(type='fit', contains='padding'))
+    )
+
+
+tidy_usage = prepare_mta_usage(mta)
+mta_usage_chart = build_mta_usage_chart(tidy_usage)
+save_chart(mta_usage_chart, "mta_usage")
 
 print('Charts saved to', CHART_DIR)
