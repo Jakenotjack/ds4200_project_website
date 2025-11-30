@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}, "axis": {"labelFont": "SF Pro Display, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif", "titleFont": "SF Pro Display, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif"}, "title": {"font": "SF Pro Display, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif", "fontSize": 18}}, "layer": [{"mark": {"type": "rect"}, "encoding": {"color": {"field": "avg_ridership", "scale": {"scheme": "blues"}, "title": "Avg Daily Ridership", "type": "quantitative"}, "tooltip": [{"field": "day_of_week", "title": "Day", "type": "ordinal"}, {"field": "precipitation_level", "title": "Precipitation", "type": "ordinal"}, {"field": "avg_ridership", "format": ",.0f", "title": "Avg Ridership", "type": "quantitative"}], "x": {"axis": {"labelAngle": -45, "labelFont": "SF Pro Display, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif", "titleFont": "SF Pro Display, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif"}, "field": "precipitation_level", "sort": ["No Rain", "Light Rain", "Moderate Rain", "Heavy Rain", "No Data"], "title": "Precipitation Level", "type": "ordinal"}, "y": {"axis": {"labelFont": "SF Pro Display, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif", "titleFont": "SF Pro Display, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif"}, "field": "day_of_week", "title": "Day of Week", "type": "ordinal"}}}, {"mark": {"type": "text", "baseline": "middle"}, "encoding": {"color": {"condition": {"test": "(datum.avg_ridership > 2442918.679166666)", "value": "white"}, "value": "black"}, "text": {"field": "avg_ridership", "format": ",.0f", "type": "quantitative"}, "x": {"field": "precipitation_level", "sort": ["No Rain", "Light Rain", "Moderate Rain", "Heavy Rain", "No Data"], "type": "ordinal"}, "y": {"field": "day_of_week", "type": "ordinal"}}}], "data": {"name": "data-e8a7920780bcab2c7741a88b3ae4c448"}, "height": 300, "title": "Average Subway Ridership by Day & Precipitation", "width": 400, "$schema": "https://vega.github.io/schema/vega-lite/v5.20.1.json", "datasets": {"data-e8a7920780bcab2c7741a88b3ae4c448": [{"day_of_week": "Monday", "precipitation_level": "No Rain", "avg_ridership": 2506301.077777778}, {"day_of_week": "Monday", "precipitation_level": "Light Rain", "avg_ridership": 2516752.25}, {"day_of_week": "Monday", "precipitation_level": "Moderate Rain", "avg_ridership": 2602927.6363636362}, {"day_of_week": "Monday", "precipitation_level": "Heavy Rain", "avg_ridership": 2614257.3225806453}, {"day_of_week": "Monday", "precipitation_level": "No Data", "avg_ridership": null}, {"day_of_week": "Tuesday", "precipitation_level": "No Rain", "avg_ridership": 2926258.0506329113}, {"day_of_week": "Tuesday", "precipitation_level": "Light Rain", "avg_ridership": 3536268.4}, {"day_of_week": "Tuesday", "precipitation_level": "Moderate Rain", "avg_ridership": 2962608.388888889}, {"day_of_week": "Tuesday", "precipitation_level": "Heavy Rain", "avg_ridership": 2821129.6691729324}, {"day_of_week": "Tuesday", "precipitation_level": "No Data", "avg_ridership": null}, {"day_of_week": "Wednesday", "precipitation_level": "No Rain", "avg_ridership": 3144381.029850746}, {"day_of_week": "Wednesday", "precipitation_level": "Light Rain", "avg_ridership": 3126561.4615384615}, {"day_of_week": "Wednesday", "precipitation_level": "Moderate Rain", "avg_ridership": 2794360.736842105}, {"day_of_week": "Wednesday", "precipitation_level": "Heavy Rain", "avg_ridership": 2873543.557142857}, {"day_of_week": "Wednesday", "precipitation_level": "No Data", "avg_ridership": null}, {"day_of_week": "Thursday", "precipitation_level": "No Rain", "avg_ridership": 3027943.9577464787}, {"day_of_week": "Thursday", "precipitation_level": "Light Rain", "avg_ridership": 3226203.4285714286}, {"day_of_week": "Thursday", "precipitation_level": "Moderate Rain", "avg_ridership": 2824107.68}, {"day_of_week": "Thursday", "precipitation_level": "Heavy Rain", "avg_ridership": 2849545.705882353}, {"day_of_week": "Thursday", "precipitation_level": "No Data", "avg_ridership": null}, {"day_of_week": "Friday", "precipitation_level": "No Rain", "avg_ridership": 2640709.4266666668}, {"day_of_week": "Friday", "precipitation_level": "Light Rain", "avg_ridership": 3089899.0}, {"day_of_week": "Friday", "precipitation_level": "Moderate Rain", "avg_ridership": 2791412.6}, {"day_of_week": "Friday", "precipitation_level": "Heavy Rain", "avg_ridership": 2804790.765151515}, {"day_of_week": "Friday", "precipitation_level": "No Data", "avg_ridership": null}, {"day_of_week": "Saturday", "precipitation_level": "No Rain", "avg_ridership": 1873441.9594594594}, {"day_of_week": "Saturday", "precipitation_level": "Light Rain", "avg_ridership": 2119244.6666666665}, {"day_of_week": "Saturday", "precipitation_level": "Moderate Rain", "avg_ridership": 2174740.0}, {"day_of_week": "Saturday", "precipitation_level": "Heavy Rain", "avg_ridership": 1790106.5579710144}, {"day_of_week": "Saturday", "precipitation_level": "No Data", "avg_ridership": null}, {"day_of_week": "Sunday", "precipitation_level": "No Rain", "avg_ridership": 1451266.3205128205}, {"day_of_week": "Sunday", "precipitation_level": "Light Rain", "avg_ridership": 1727392.2}, {"day_of_week": "Sunday", "precipitation_level": "Moderate Rain", "avg_ridership": 1349568.9583333333}, {"day_of_week": "Sunday", "precipitation_level": "Heavy Rain", "avg_ridership": 1485902.3671875}, {"day_of_week": "Sunday", "precipitation_level": "No Data", "avg_ridership": null}]}};
+      var embedOpt = {"actions": false, "mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>

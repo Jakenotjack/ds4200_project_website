@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NYC Transit & Air Quality Dashboard</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --accent: #2563eb;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "SF Pro Display", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      padding: 32px 24px 8px;
+      text-align: center;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      letter-spacing: -0.01em;
+    }
+    p.lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+    main {
+      max-width: 1200px;
+      margin: 0 auto 48px;
+      padding: 0 16px 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    section.card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      min-height: 360px;
+    }
+    .chart-frame {
+      width: 100%;
+      height: 460px;
+      border: none;
+      border-radius: 12px;
+      box-shadow: inset 0 0 0 1px var(--border);
+      background: #fff;
+    }
+    .chart-frame.tall {
+      height: 620px;
+    }
+    section.card.full {
+      grid-column: 1 / -1;
+    }
+    .card h2 {
+      margin: 4px 0 4px;
+      font-size: 20px;
+      letter-spacing: -0.01em;
+    }
+    .card .subhead {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .chart {
+      flex: 1;
+      min-height: 320px;
+    }
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 12px;
+    }
+    iframe.map {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      height: 520px;
+      box-shadow: inset 0 0 0 1px var(--border);
+    }
+    .footer-note {
+      text-align: center;
+      color: var(--muted);
+      padding: 12px 16px 32px;
+      font-size: 13px;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+</head>
+<body>
+  <header>
+    <h1>NYC Transit, Weather, and Air Quality</h1>
+    <p class="lead">Four Altair charts plus an ArcGIS map explore how weather, AQI, and COVID phases relate to subway ridership.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Ridership by Precipitation & Weekday</h2>
+      <p class="subhead">Average subway ridership contrasted across rain intensity and day of week.</p>
+      <iframe class="chart-frame" src="charts/heatmap.html" title="Ridership by Precipitation & Weekday"></iframe>
+    </section>
+
+    <section class="card">
+      <h2>Weather Density Across Pandemic Phases</h2>
+      <p class="subhead">Ridership distributions under different weather categories through four periods.</p>
+      <iframe class="chart-frame tall" src="charts/weather_density.html" title="Weather Density Across Pandemic Phases"></iframe>
+    </section>
+
+    <section class="card full">
+      <h2>AQI vs. Ridership (COVID Periods)</h2>
+      <p class="subhead">Brush the AQI series to filter the scatter and compare regression trends by period.</p>
+      <iframe class="chart-frame tall" src="charts/aqi_periods.html" title="AQI vs Ridership COVID Periods"></iframe>
+    </section>
+
+    <section class="card full">
+      <h2>AQI vs. Ridership (Pandemic Timeline)</h2>
+      <p class="subhead">Alternate period grouping showing how ridership responds under AQI thresholds.</p>
+      <iframe class="chart-frame tall" src="charts/aqi_periods_v2.html" title="AQI vs Ridership Pandemic Timeline"></iframe>
+    </section>
+
+    <section class="card full">
+      <h2>NYC Subway Stations Map Comparison</h2>
+      <p class="subhead">ArcGIS web maps for 2023 (left) and 2020 (right) to compare spatial patterns.</p>
+      <div class="map-grid">
+        <iframe class="map" allow="local-network-access; geolocation" title="nyc_subway2023"
+          src="https://nu.maps.arcgis.com/apps/mapviewer/index.html?configurableview=true&webmap=1a11ba87cc6642538dd7b9e79e07bfd8&theme=light&scroll=false&center=-73.97172145699336,40.73841003121678&scale=72223.819286"></iframe>
+        <iframe class="map" allow="local-network-access; geolocation" title="nyc_subway2020"
+          src="https://nu.maps.arcgis.com/apps/mapviewer/index.html?configurableview=true&webmap=15ad1408e8774c15909bd0e8dd9f3a7f&theme=light&scroll=false&center=-73.96597883718917,40.73350915450238&scale=72223.819286"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer-note">Data: MTA ridership, Open-Meteo weather, EPA Air Quality. Charts rendered with Altair (Vega-Lite) and embedded via D3 + vega-embed.</div>
+  <div class="footer-note">Data: MTA ridership, Open-Meteo weather, EPA Air Quality. Charts rendered with Altair and exported as standalone HTML.</div>
+</body>
+</html>
