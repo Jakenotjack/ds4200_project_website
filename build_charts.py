@@ -198,6 +198,7 @@ save_chart(chart_ridges, "weather_density")
 
 # Merge MTA + AQI
 mta_for_aqi = mta.copy()
+mta_for_aqi['ridership'] = mta_for_aqi['subways_total_estimated_ridership']
 mta_for_aqi['date'] = mta_for_aqi['date'].dt.strftime('%Y-%m-%d')
 air_for_merge = air.copy()
 air_for_merge['date'] = air_for_merge['date'].dt.strftime('%Y-%m-%d')
